@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login & Dashboard - 니코</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  /* =================================
+     1. GAYA UMUM & Halaman
+     ================================= */
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    font-family: "Poppins", sans-serif;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  .main-wrapper {
+    width: 100%;
+    max-width: 400px;
+    min-height: 100vh;
+    background-color: #1c1c1c;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+  }
+
+  /* Containers Halaman */
+  .page-container {
+    position: absolute;
+    inset: 0;
+    display: none; /* Semua halaman disembunyikan secara default */
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #121212;
+    z-index: 100;
+  }
+  
+  /* =================================
+     2. GAYA LOGIN
+     ================================= */
+  #loginPage {
+    display: flex; /* Halaman Login yang pertama kali ditampilkan */
+    justify-content: center;
+    align-items: center;
+    padding: 30px 25px;
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logo-header img { width: 250px; height: auto; margin-bottom: 10px; filter: drop-shadow(0 0 15px #e53935); }
+  .welcome-text { text-align: center; margin-bottom: 25px; }
+  .welcome-text h2 { margin: 5px 0; font-size: 24px; font-weight: bold; }
+  form { width: 100%; max-width: 350px; }
+  .input-group { position: relative; margin-bottom: 20px; }
+  .input-field {
+    width: 100%; padding: 15px 45px; border: 1px solid #333; border-radius: 8px;
+    background-color: #2c2c2c; color: #fff; font-size: 16px; box-sizing: border-box;
+  }
+  .icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; font-size: 18px; }
+  .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #888; cursor: pointer; font-size: 18px; }
+
+  /* Tombol Login */
+  .sign-in-button {
+    width: 100%; padding: 15px; background-color: #e53935; color: #fff; border: none;
+    border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer;
+  }
+
+  /* =================================
+     3. GAYA VIDEO
+     ================================= */
+  #videoPage {
+    background-color: #000;
+    justify-content: center;
+    align-items: center;
+    z-index: 110;
+  }
+
+  .video-box {
+    position: relative;
+    width: 280px;
+    height: 160px;
+    border: 2px solid #dcdcdc;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    background-color: #000;
+  }
+
+  .video-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .xx-text {
+    margin-top: 25px; font-size: 26px; letter-spacing: 3px; font-weight: bold;
+    background: linear-gradient(90deg, #fef08a, #a855f7); -webkit-background-clip: text;
+    color: transparent; animation: glow 2s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0% { text-shadow: 0 0 10px #fef08a, 0 0 20px #a855f7; }
+    50% { text-shadow: 0 0 20px #fef08a, 0 0 30px #a855f7; }
+    100% { text-shadow: 0 0 10px #fef08a, 0 0 20px #a855f7; }
+  }
+
+
+  /* =================================
+     4. GAYA DASHBOARD
+     ================================= */
+  #dashboardPage {
+    background-color: #1c1c1c;
+    z-index: 50;
+    /* Ganti display: flex di JS setelah video selesai */
+  }
+  
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .app-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #1c1c1c; border-bottom: 1px solid #333; font-size: 1.2em; }
+  .menu-icon, .user-icon { font-size: 1.5em; cursor: pointer; }
+  .app-title { font-weight: bold; color: #ff4500; }
+  .content-view { padding: 20px 15px; flex-grow: 1; overflow-y: auto; }
+  .hidden { display: none !important; }
+
+  /* Home/Wallet */
+  .wallet-title { color: #ffd700; margin-top: 0; margin-bottom: 20px; font-size: 1.5em; }
+  .card { background-color: #2a2a2a; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+  .owner-card .role-status { display: flex; justify-content: space-between; align-items: center; }
+  .owner-card .role { background-color: #8b0000; padding: 8px 15px; border-radius: 20px; font-weight: bold; display: flex; align-items: center; }
+  .owner-card .status { background-color: #ff4500; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+  .balance-card .coin-balance { display: grid; grid-template-columns: 1fr auto auto; align-items: center; }
+  .balance-card .coin-name { font-size: 1.1em; font-weight: bold; display: flex; align-items: center; }
+  .balance-card .coin-name i { margin-right: 5px; }
+  .balance-card .balance-amount { font-size: 1.2em; font-weight: bold; margin-right: 15px; }
+  .balance-card .balance-btn { background-color: #444; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; cursor: pointer; }
+  .action-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
+  .action-btn { flex: 1; padding: 15px 5px; border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+  .top-up-btn { background-color: #daa520; }
+  .transfer-btn { background-color: #4682b4; }
+  .history-btn { background-color: #3cb371; }
+
+  /* WhatsApp/Target */
+  .profile-logo-container { display: flex; justify-content: center; margin-bottom: 20px; }
+  .profile-logo { width: 100px; height: 100px; border-radius: 50%; background: #2a2a2a url('logo_placeholder.png') center / cover no-repeat; border: 4px solid #ff4500; display: flex; align-items: center; justify-content: center; font-size: 2em; color: #ff4500; }
+  .profile-section { text-align: center; margin-bottom: 30px; }
+  .username { font-size: 1.8em; font-weight: bold; color: #ff4500; margin: 5px 0 2px; }
+  .user-details { font-size: 0.9em; color: #aaa; margin-bottom: 15px; }
+  .target-form label { display: block; margin-top: 15px; margin-bottom: 5px; font-weight: bold; color: #ccc; }
+  .target-form input, .target-form select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; background-color: #2a2a2a; color: #f0f0f0; font-size: 1em; box-sizing: border-box; }
+  .submit-bug-btn { width: 100%; padding: 15px; margin-top: 30px; background-color: #ff4500; color: white; border: none; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+
+  /* Tools Dashboard */
+  .tools-header { text-align: center; margin-bottom: 30px; }
+  .tools-header h1 { color: #ff4500; font-size: 1.8em; margin-bottom: 5px; }
+  .tools-header p { color: #aaa; font-size: 0.9em; }
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  .tool-box { background-color: #333; border-radius: 10px; padding: 15px; height: 120px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); cursor: pointer; transition: transform 0.2s; border-left: 5px solid; }
+  .tool-box:hover { transform: translateY(-3px); }
+  .tool-box i { font-size: 1.8em; margin-bottom: 5px; }
+  .tool-title { font-weight: bold; font-size: 1.1em; margin-bottom: 3px; }
+  .tool-desc { font-size: 0.7em; color: rgba(255, 255, 255, 0.6); }
+
+  /* Tool Colors */
+  .ddos { background-color: #4b1b1b; border-color: #ff0000; } 
+  .network { background-color: #1b4b1b; border-color: #3cb371; }
+  .osint { background-color: #4b1b4b; border-color: #8a2be2; }
+  .downloader { background-color: #4b301b; border-color: #daa520; }
+  .utilities { background-color: #1b4b4b; border-color: #4682b4; }
+  .quick-access { background-color: #4b4b1b; border-color: #ffd700; }
+
+  /* Bottom Nav */
+  .bottom-nav { display: flex; justify-content: space-around; padding: 10px 0; background-color: #2a2a2a; border-top: 1px solid #333; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5); }
+  .nav-item { color: #888; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 0.8em; transition: color 0.3s; }
+  .nav-item i { font-size: 1.5em; margin-bottom: 3px; }
+  .nav-item.active { color: #ff4500; }
+</style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    
+    <div class="page-container" id="loginPage">
+        <div class="login-box">
+            <div class="logo-header">
+                <img src="logo.jpg" alt="Logo Niko">
+            </div>
+            <div class="welcome-text">
+                <h2>Welcome Back</h2>
+                <p>Sign in to continue</p>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user icon"></i>
+                    <input type="text" class="input-field" placeholder="Username" id="username">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock icon"></i>
+                    <input type="password" class="input-field" placeholder="Password" id="password">
+                    <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                </div>
+                <button type="submit" class="sign-in-button">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="page-container" id="videoPage">
+        <div class="video-box">
+            <video id="introVideo" preload="auto" muted playsinline>
+                <source src="vidio.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="xx-text">니코</div>
+    </div>
+    
+    <div class="page-container" id="dashboardPage">
+        <div class="app-container">
+            
+            <header class="app-header">
+                <div class="menu-icon"><i class="fas fa-bars"></i></div>
+                <div class="app-title">니코</div>
+                <div class="user-icon"><i class="fas fa-user-circle"></i></div>
+            </header>
+    
+            <main id="home-view" class="content-view">
+                <h2 class="wallet-title">C My Wallet</h2>
+                
+                <div class="card owner-card">
+                    <div class="role-status">
+                        <span class="role"><i class="fas fa-user-shield"></i> **OWNER**</span>
+                        <span class="status">Status</span>
+                    </div>
+                </div>
+    
+                <div class="card balance-card">
+                    <div class="coin-balance">
+                        <span class="coin-name" style="color:#ffd700;"><i class="fas fa-money-bill-wave"></i> B Coin</span>
+                        <span class="balance-amount">9985</span>
+                        <span class="balance-btn">Balance</span>
+                    </div>
+                </div>
+    
+                <div class="card balance-card">
+                    <div class="coin-balance">
+                        <span class="coin-name" style="color:#4682b4;"><i class="fab fa-bitcoin"></i> L Coin</span>
+                        <span class="balance-amount">1</span>
+                        <span class="balance-btn">Balance</span>
+                    </div>
+                </div>
+    
+                <div class="action-buttons">
+                    <button class="action-btn top-up-btn"><i class="fas fa-plus"></i> Top Up</button>
+                    <button class="action-btn transfer-btn"><i class="fas fa-exchange-alt"></i> Transfer</button>
+                    <button class="action-btn history-btn"><i class="fas fa-history"></i> History</button>
+                </div>
+            </main>
+            
+            <main id="whatsapp-view" class="content-view hidden">
+                <div class="profile-section">
+                    <div class="profile-logo-container">
+                        <img src="logo.jpg" alt="Logo" class="profile-logo" onerror="this.outerHTML='<div class=\'profile-logo\'>니코</div>'">
+                    </div>
+                    
+                    <p class="username">니코</p>
+                    <p class="user-details">Role: OWNER • Exp: 99999-89-99</p>
+    
+                    <div class="target-form">
+                        <label for="target-number">Nomor Target</label>
+                        <input type="tel" id="target-number" placeholder="Contoh: +62XXXXXXXXXXXX">
+                        
+                        <label for="bug-select">Pilih Bug</label>
+                        <select id="bug-select">
+                            <option>Crash Infinity</option>
+                            <option>Bug V2</option>
+                            <option>Bug V3</option>
+                        </select>
+    
+                        <button class="submit-bug-btn"><i class="fas fa-paper-plane"></i> KIRIM BUG</button>
+                    </div>
+                </div>
+            </main>
+    
+            <main id="tools-view" class="content-view hidden">
+                <div class="tools-header">
+                    <h1 style="color: #ff4500;">TOOLS DASHBOARD</h1>
+                    <p>Advanced Security & OSINT Tools</p>
+                </div>
+    
+                <div class="dashboard-grid">
+                    <div class="tool-box ddos">
+                        <div>
+                            <i class="fas fa-fire" style="color: #ff0000;"></i>
+                            <div class="tool-title">DDOS Tools</div>
+                        </div>
+                        <div class="tool-desc">Advanced flooding methods</div>
+                    </div>
+    
+                    <div class="tool-box network">
+                        <div>
+                            <i class="fas fa-network-wired" style="color: #3cb371;"></i>
+                            <div class="tool-title">Network</div>
+                        </div>
+                        <div class="tool-desc">Scan & analysis network</div>
+                    </div>
+    
+                    <div class="tool-box osint">
+                        <div>
+                            <i class="fas fa-search" style="color: #8a2be2;"></i>
+                            <div class="tool-title">OSINT</div>
+                        </div>
+                        <div class="tool-desc">Open Source Intelligence</div>
+                    </div>
+    
+                    <div class="tool-box downloader">
+                        <div>
+                            <i class="fas fa-download" style="color: #daa520;"></i>
+                            <div class="tool-title">Downloader</div>
+                        </div>
+                        <div class="tool-desc">Secure file fetcher</div>
+                    </div>
+    
+                    <div class="tool-box utilities">
+                        <div>
+                            <i class="fas fa-tools" style="color: #4682b4;"></i>
+                            <div class="tool-title">Utilities</div>
+                        </div>
+                        <div class="tool-desc">Common useful tools</div>
+                    </div>
+    
+                    <div class="tool-box quick-access">
+                        <div>
+                            <i class="fas fa-rocket" style="color: #ffd700;"></i>
+                            <div class="tool-title">Quick Access</div>
+                        </div>
+                        <div class="tool-desc">Fast access to top services</div>
+                    </div>
+                </div>
+            </main>
+    
+            <nav class="bottom-nav">
+                <a href="#" class="nav-item active" data-view="home"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="nav-item" data-view="whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="#" class="nav-item" data-view="tools"><i class="fas fa-tools"></i> Tools</a>
+            </nav>
+    
+        </div>
+    </div>
+</div>
+
+<script>
+  const loginPage = document.getElementById('loginPage');
+  const videoPage = document.getElementById('videoPage');
+  const dashboardPage = document.getElementById('dashboardPage');
+  const loginForm = document.getElementById('loginForm');
+  const introVideo = document.getElementById('introVideo');
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+  
+  const navItems = document.querySelectorAll('.nav-item');
+  const views = document.querySelectorAll('.content-view');
+
+  let videoTimer; // Variabel untuk menyimpan timer fallback
+  
+  // --- Fungsi Utama Transisi Halaman ---
+  function showPage(pageId) {
+    // Sembunyikan semua halaman
+    document.querySelectorAll('.page-container').forEach(page => {
+      page.style.display = 'none';
+    });
+    // Tampilkan halaman yang diminta
+    document.getElementById(pageId).style.display = 'flex';
+  }
+
+  function goToDashboard() {
+    clearTimeout(videoTimer); // Pastikan timer berhenti jika fungsi ini dipanggil
+    showPage('dashboardPage');
+    
+    // Pastikan container dashboard tampil penuh
+    document.querySelector('.app-container').style.display = 'flex';
+
+    // Inisialisasi tampilan dashboard ke 'home'
+    showView('home-view');
+  }
+
+
+  // --- Logika Login dan Video ---
+
+  // 👁 Toggle password visibility
+  if (togglePassword) {
+      togglePassword.addEventListener('click', () => {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        togglePassword.classList.toggle('fa-eye-slash');
+      });
+  }
+
+
+  // 🔐 Aksi setelah login: Pindah ke Halaman Video
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    showPage('videoPage');
+    
+    // Atur Timer Fallback 15 detik (Jika video gagal/gagal selesai)
+    // Jika dalam 15 detik event 'ended' tidak terpicu, pindah paksa
+    videoTimer = setTimeout(goToDashboard, 15000); 
+
+    // Coba play video, dan tangani error
+    introVideo.play().catch(error => {
+        console.error("Autoplay video gagal:", error);
+        // Jika autoplay gagal, biarkan timer yang mengurus pemindahan
+    });
+  });
+
+  // 🎬 Setelah video selesai: Pindah ke Halaman Dashboard
+  introVideo.addEventListener('ended', goToDashboard);
+
+
+  // --- Logika Navigasi Dashboard ---
+
+  // Fungsi untuk menampilkan view yang sesuai di dalam dashboard
+  function showView(viewId) {
+    views.forEach(view => {
+      view.classList.add('hidden');
+    });
+    const targetView = document.getElementById(viewId);
+    if (targetView) {
+        targetView.classList.remove('hidden');
+    }
+  }
+
+  // Logika Navigasi Bawah
+  navItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        navItems.forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+        
+        const targetViewId = this.getAttribute('data-view') + '-view';
+        showView(targetViewId);
+    });
+  });
+  
+  // Logika Aksi Tombol Tools
+  document.querySelectorAll('.tool-box').forEach(box => {
+      box.addEventListener('click', function() {
+          const toolTitle = this.querySelector('.tool-title').textContent;
+          alert('Anda mengklik: ' + toolTitle + '\n(Fungsionalitas penuh memerlukan backend code!)');
+      });
+  });
+
+
+  // Inisialisasi awal: Pastikan hanya halaman login yang terlihat
+  showPage('loginPage');
+  
+</script>
+</body>
+</html>
